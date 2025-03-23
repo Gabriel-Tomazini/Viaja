@@ -12,12 +12,9 @@ import com.example.viaja.ui.theme.ViajaTheme
 
 @Composable
     fun ImagemLocal() {
-    // Obtendo o contexto
     val context = LocalContext.current
-    // Usando o contexto para obter o drawable
     val drawable: Drawable? = ResourcesCompat.getDrawable(context.resources, R.drawable.logo, null)
 
-    // Se você quiser exibir a imagem, você pode converter o drawable para ImageBitmap
     drawable?.toBitmap()?.asImageBitmap()?.let {
         Image(bitmap = it, contentDescription = "logo")
     }

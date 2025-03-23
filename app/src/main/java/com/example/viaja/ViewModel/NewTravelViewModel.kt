@@ -1,11 +1,10 @@
-package com.example.viaja.Screens
+package com.example.viaja.ViewModel
 
 import androidx.lifecycle.ViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 
-// Modelo de Dados
 data class NewTravel(
     val destino: String = "",
     val dataInicio: String = "",
@@ -14,7 +13,6 @@ data class NewTravel(
 )
 
 class NewTravelViewModel : ViewModel() {
-    // Estado privado
     private val _uiState = MutableStateFlow(NewTravel())
     val uiState: StateFlow<NewTravel> = _uiState.asStateFlow()
 

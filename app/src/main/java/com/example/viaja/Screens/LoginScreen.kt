@@ -53,16 +53,12 @@ fun LoginScreen(
             .fillMaxSize(),
         contentAlignment = Alignment.Center,
     ) {
-        // Imagem Local acima do login (ficará acima da parte de login)
-        ImagemLocal()
-
-        // Caixa de login
         Column(
             modifier = Modifier
                 .padding(45.dp)
                 .border(1.dp, Color.Black, shape = RoundedCornerShape(12.dp))
                 .padding(32.dp)
-                .align(Alignment.Center) // Garante que o formulário ficará centralizado
+                .align(Alignment.Center)
             ,
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center

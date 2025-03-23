@@ -15,10 +15,8 @@ fun MyDatePicker() {
     val context = LocalContext.current
     val calendar = Calendar.getInstance()
 
-    // Estado para armazenar a data selecionada
     val selectedDate = remember { mutableStateOf("") }
 
-    // Criando o DatePickerDialog
     val datePickerDialog = DatePickerDialog(
         context,
         { _: DatePicker, year: Int, month: Int, dayOfMonth: Int ->
@@ -35,7 +33,6 @@ fun MyDatePicker() {
             .padding(16.dp),
         verticalArrangement = Arrangement.Center
     ) {
-        // Exibir a data selecionada
         Text(
             text = if (selectedDate.value.isEmpty()) "Selecione uma data" else "Data: ${selectedDate.value}",
             modifier = Modifier

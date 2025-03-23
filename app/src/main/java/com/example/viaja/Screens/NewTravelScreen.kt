@@ -17,6 +17,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.viaja.Components.MyTextField
+import com.example.viaja.ViewModel.NewTravelViewModel
 import com.example.viaja.ui.theme.ViajaTheme
 import java.util.*
 
@@ -29,7 +30,6 @@ fun NewTravelScreen(
     val context = LocalContext.current
     val calendar = Calendar.getInstance()
 
-    // Criando DatePickerDialog para a data de início
     val datePickerInicio = DatePickerDialog(
         context,
         { _: DatePicker, year: Int, month: Int, dayOfMonth: Int ->
@@ -40,7 +40,6 @@ fun NewTravelScreen(
         calendar.get(Calendar.DAY_OF_MONTH)
     )
 
-    // Criando DatePickerDialog para a data final
     val datePickerFinal = DatePickerDialog(
         context,
         { _: DatePicker, year: Int, month: Int, dayOfMonth: Int ->
@@ -65,7 +64,7 @@ fun NewTravelScreen(
                 .border(1.dp, Color.Black, shape = RoundedCornerShape(12.dp))
                 .padding(32.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(16.dp) // Adicionado espaçamento uniforme
+            verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             MyTextField(
                 value = uiState.destino,
@@ -73,7 +72,6 @@ fun NewTravelScreen(
                 label = "Destino"
             )
 
-            // Seleção de Tipo de Viagem
             Column(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalAlignment = Alignment.Start
@@ -93,7 +91,6 @@ fun NewTravelScreen(
                 }
             }
 
-            // Campo para Data de Início
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -108,7 +105,6 @@ fun NewTravelScreen(
                 )
             }
 
-            // Campo para Data Final
             Box(
                 modifier = Modifier
                     .fillMaxWidth()

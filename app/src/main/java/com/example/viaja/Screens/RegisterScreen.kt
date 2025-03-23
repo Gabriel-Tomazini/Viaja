@@ -35,6 +35,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.viaja.Components.MyTextField
+import com.example.viaja.ViewModel.RegisterUserViewModel
 import com.example.viaja.ui.theme.ViajaTheme
 
 @Composable

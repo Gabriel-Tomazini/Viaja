@@ -26,7 +26,7 @@ import com.example.viaja.Screens.RegisterScreen
 import com.example.viaja.ui.theme.ViajaTheme
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.viaja.Screens.NewTravelScreen
-import com.example.viaja.Screens.RegisterUserViewModel
+import com.example.viaja.ViewModel.RegisterUserViewModel
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
