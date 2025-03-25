@@ -72,7 +72,7 @@ fun LoginScreen(
                 value = loginUser.value.password,
                 onValueChange = { LoginUserViewModel.onPasswordChange(it) },
                 singleLine = true,
-                label = { Text(text = "Confirmar senha") },
+                label = { Text(text = "Senha") },
                 trailingIcon = {
                     IconButton(onClick = { passwordVisible = !passwordVisible }) {
                         Icon(
@@ -96,10 +96,6 @@ fun LoginScreen(
                 Button(onClick = { onNavigateTo("RegisterScreen") },
                     modifier = Modifier.weight(1f)) {
                     Text(text = "Cadastrar")
-                }
-                Button(onClick = { onNavigateTo("NewTravelScreen") },
-                    modifier = Modifier.weight(1f)) {
-                    Text(text = "New Travel")
                 }
             }
         }
