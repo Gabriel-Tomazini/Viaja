@@ -2,30 +2,14 @@ package com.example.viaja.Screens
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
-import androidx.compose.material3.Button
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -42,40 +26,64 @@ import com.example.viaja.ui.theme.ViajaTheme
 fun RegisterScreen(
     RegisterUserViewModel: RegisterUserViewModel = viewModel(),
     onNavigateTo: (String) -> Unit
-){
-
-    var registerUser = RegisterUserViewModel.uiState.collectAsState()
+) {
+    val registerUser = RegisterUserViewModel.uiState.collectAsState()
 
     var passwordVisible by rememberSaveable { mutableStateOf(false) }
     var confirmPasswordVisible by rememberSaveable { mutableStateOf(false) }
+
+    var emailError by remember { mutableStateOf(false) }
     var passwordError by remember { mutableStateOf(false) }
+
+    fun isValidEmail(email: String): Boolean {
+        return android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()
+    }
 
     Box(
         modifier = Modifier
             .background(color = Color.White)
             .fillMaxSize(),
         contentAlignment = Alignment.Center
-    ){
-        Column (modifier = Modifier.
-        padding(45.dp).
-        border(1.dp, Color.Black, shape = RoundedCornerShape(12.dp)).
-        padding(32.dp),
+    ) {
+        Column(
+            modifier = Modifier
+                .padding(45.dp)
+                .border(1.dp, Color.Black, shape = RoundedCornerShape(12.dp))
+                .padding(32.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
             MyTextField(
                 value = registerUser.value.user,
-                onValueChange = {RegisterUserViewModel.onUserChange(it)},
+                onValueChange = { RegisterUserViewModel.onUserChange(it) },
                 label = "Usuário"
             )
             MyTextField(
-                value = registerUser.value.email,
-                onValueChange = {RegisterUserViewModel.onEmailChange(it)},
-                label = "E-mail"
+                value = registerUser.value.name,
+                onValueChange = { RegisterUserViewModel.onNameChange(it) },
+                label = "Nome"
             )
+            MyTextField(
+                value = registerUser.value.email,
+                onValueChange = {
+                    RegisterUserViewModel.onEmailChange(it)
+                    emailError = !isValidEmail(it)
+                },
+                label = "E-mail",
+                isError = emailError
+            )
+
+            if (emailError) {
+                Text(
+                    text = "E-mail inválido",
+                    color = MaterialTheme.colorScheme.error,
+                    modifier = Modifier.padding(start = 8.dp, top = 4.dp)
+                )
+            }
+
             OutlinedTextField(
                 value = registerUser.value.password,
-                onValueChange = {RegisterUserViewModel.onPasswordChange(it)},
+                onValueChange = { RegisterUserViewModel.onPasswordChange(it) },
                 singleLine = true,
                 label = { Text(text = "Senha") },
                 trailingIcon = {
@@ -89,9 +97,13 @@ fun RegisterScreen(
                 visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
                 modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp),
             )
+
             OutlinedTextField(
                 value = registerUser.value.confirmPassword,
-                onValueChange = {RegisterUserViewModel.onConfirmPasswordChange(it)},
+                onValueChange = {
+                    RegisterUserViewModel.onConfirmPasswordChange(it)
+                    passwordError = it != registerUser.value.password
+                },
                 singleLine = true,
                 label = { Text(text = "Confirmar senha") },
                 trailingIcon = {
@@ -115,10 +127,15 @@ fun RegisterScreen(
                 )
             }
 
-            Row(modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(16.dp)) {
-                Button(onClick = { onNavigateTo("LoginScreen")},
-                    modifier = Modifier.weight(1f)) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
+                Button(
+                    onClick = { onNavigateTo("LoginScreen") },
+                    modifier = Modifier.weight(1f),
+                    enabled = !emailError && !passwordError
+                ) {
                     Text(text = "Entrar")
                 }
             }
@@ -128,7 +145,7 @@ fun RegisterScreen(
 
 @Composable
 @Preview(showBackground = true, showSystemUi = true)
-fun RegisterScreenPreview(){
+fun RegisterScreenPreview() {
     ViajaTheme {
         RegisterScreen(onNavigateTo = {})
     }

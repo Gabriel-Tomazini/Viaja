@@ -12,33 +12,37 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusEvent
 
 @Composable
-fun MyTextField(value: String, onValueChange: (String) -> Unit, label: String) {
-    var isToouched = remember {
-        mutableStateOf(false)
-    }
-    var focusRequester = remember { FocusRequester() }
+fun MyTextField(
+    value: String,
+    onValueChange: (String) -> Unit,
+    label: String,
+    isError: Boolean = false,
+    errorMessage: String? = null
+) {
+    var isTouched = remember { mutableStateOf(false) }
+    val focusRequester = remember { FocusRequester() }
 
     OutlinedTextField(
         value = value,
         onValueChange = {
-            isToouched.value = true
+            isTouched.value = true
             onValueChange(it)
         },
         singleLine = true,
-        label = {
-            Text(text = label)
-        },
+        label = { Text(text = label) },
         modifier = Modifier
             .fillMaxWidth()
             .focusRequester(focusRequester)
             .onFocusEvent {
-                if (it.hasFocus)
-                    isToouched.value = true
+                if (it.hasFocus) isTouched.value = true
             },
-        isError = isToouched.value && value.isBlank(),
+        isError = isTouched.value && (value.isBlank() || isError),
         supportingText = {
-            if (isToouched.value && value.isBlank())
-                Text(text = "Campo ${label} é obrigatório")
+            if (isTouched.value && value.isBlank()) {
+                Text(text = "Campo $label é obrigatório")
+            } else if (isError && errorMessage != null) {
+                Text(text = errorMessage)
+            }
         }
     )
 }

@@ -1,6 +1,7 @@
 package com.example.viaja.Screens
 
 import ImagemLocal
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -10,6 +11,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material3.Button
@@ -36,6 +38,8 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.cadastrousuario.Screens.LoginUserViewModel
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
+import androidx.compose.ui.res.painterResource
+import com.example.viaja.R
 
 @Composable
 fun LoginScreen(
@@ -53,6 +57,14 @@ fun LoginScreen(
             .fillMaxSize(),
         contentAlignment = Alignment.Center,
     ) {
+        Image(
+            painter = painterResource(id = R.drawable.logo),
+            contentDescription = "logo",
+            modifier = Modifier
+                .align(Alignment.TopCenter)
+                .padding(top = 64.dp)
+                .size(200.dp)
+        )
         Column(
             modifier = Modifier
                 .padding(45.dp)
