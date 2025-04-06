@@ -2,6 +2,7 @@ package com.example.viaja.Screens
 
 import android.app.DatePickerDialog
 import android.widget.DatePicker
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -16,16 +17,28 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.registeruser.components.ErrorDialog
 import com.example.viaja.Components.MyTextField
+import com.example.viaja.Factory.NewTravelViewModelFactory
 import com.example.viaja.ViewModel.NewTravelViewModel
+import com.example.viaja.dataBase.AppDataBase
 import com.example.viaja.ui.theme.ViajaTheme
 import java.util.*
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun NewTravelScreen(
-    newTravelViewModel: NewTravelViewModel = viewModel(),
     onNavigateTo: (String) -> Unit
 ) {
+    val ctx = LocalContext.current
+
+    val newTravelViewModel: NewTravelViewModel =
+        viewModel(
+            factory = NewTravelViewModelFactory(AppDataBase.getDatabase(ctx).travelDao())
+        )
+
+    val regiterTravel = newTravelViewModel.uiState.collectAsState()
+
     val uiState by newTravelViewModel.uiState.collectAsState()
     val context = LocalContext.current
     val calendar = Calendar.getInstance()
@@ -120,7 +133,7 @@ fun NewTravelScreen(
             }
 
             MyTextField(
-                value = uiState.orçamento.toString(),
+                value = uiState.orcamento.toString(),
                 onValueChange = { newTravelViewModel.onOrcamentoChange(it.toDoubleOrNull() ?: 0.0) },
                 label = "Orçamento"
             )
@@ -129,10 +142,32 @@ fun NewTravelScreen(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(16.dp)
             ) {
-                Button(onClick = { onNavigateTo("MainScreen") }, modifier = Modifier.weight(1f)) {
+                Button(
+                    onClick = {
+                        newTravelViewModel.registerTravel()
+                    },
+                    modifier = Modifier.weight(1f)) {
                     Text(text = "Salvar")
                 }
             }
+
+            if (regiterTravel.value.errorMessage.isNotBlank()) {
+                ErrorDialog(
+                    error = regiterTravel.value.errorMessage,
+                    onDismissRequest =  {
+                        newTravelViewModel.cleanDisplayValues()
+                    },
+                )
+            }
+
+            LaunchedEffect(regiterTravel.value.isSaved) {
+                if (regiterTravel.value.isSaved) {
+                    Toast.makeText(ctx, "Nova viagem cadastrada com sucesso!", Toast.LENGTH_SHORT).show()
+                    onNavigateTo("MainScreen")
+                    newTravelViewModel.cleanDisplayValues()
+                }
+            }
+
         }
     }
 }

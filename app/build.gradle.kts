@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
+    id("com.google.devtools.ksp")
 }
 
 android {
@@ -42,6 +43,7 @@ android {
 dependencies {
     val lifecycle_version = "2.8.7"
     val arch_version = "2.2.0"
+    val room_version = "2.6.1"
 
     // ViewModel
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:$lifecycle_version")
@@ -53,6 +55,11 @@ dependencies {
     implementation("androidx.compose.material3:material3:1.2.0")
 
     implementation("androidx.navigation:navigation-compose:2.7.5")
+
+    implementation("androidx.room:room-runtime:$room_version")
+    ksp("androidx.room:room-compiler:$room_version")
+    implementation ("androidx.room:room-ktx:2.2.5")
+    androidTestImplementation ("androidx.room:room-testing:2.2.5")
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)

@@ -147,9 +147,7 @@ fun MyApp() {
                     })
                 }
                 composable(route = "RegisterScreen") {
-                    val registerUserViewModel: RegisterUserViewModel = viewModel()
                     RegisterScreen(
-                        RegisterUserViewModel = registerUserViewModel,
                         onNavigateTo = { navController.navigate(it) }
                     )
                 }

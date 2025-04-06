@@ -1,5 +1,7 @@
 package com.example.viaja.Screens
 
+import android.util.Patterns
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
@@ -13,21 +15,32 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.registeruser.components.ErrorDialog
 import com.example.viaja.Components.MyTextField
 import com.example.viaja.ViewModel.RegisterUserViewModel
+import com.example.viaja.Factory.RegisterUserViewModelFactory
+import com.example.viaja.dataBase.AppDataBase
 import com.example.viaja.ui.theme.ViajaTheme
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RegisterScreen(
-    RegisterUserViewModel: RegisterUserViewModel = viewModel(),
     onNavigateTo: (String) -> Unit
 ) {
-    val registerUser = RegisterUserViewModel.uiState.collectAsState()
+    val ctx = LocalContext.current
+
+    val registerUserViewModel: RegisterUserViewModel =
+        viewModel(
+            factory = RegisterUserViewModelFactory(AppDataBase.getDatabase(ctx).userDao())
+        )
+
+    val registerUser = registerUserViewModel.uiState.collectAsState()
 
     var passwordVisible by rememberSaveable { mutableStateOf(false) }
     var confirmPasswordVisible by rememberSaveable { mutableStateOf(false) }
@@ -36,7 +49,7 @@ fun RegisterScreen(
     var passwordError by remember { mutableStateOf(false) }
 
     fun isValidEmail(email: String): Boolean {
-        return android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()
+        return Patterns.EMAIL_ADDRESS.matcher(email).matches()
     }
 
     Box(
@@ -55,18 +68,18 @@ fun RegisterScreen(
         ) {
             MyTextField(
                 value = registerUser.value.user,
-                onValueChange = { RegisterUserViewModel.onUserChange(it) },
+                onValueChange = { registerUserViewModel.onUserChange(it) },
                 label = "Usuário"
             )
             MyTextField(
                 value = registerUser.value.name,
-                onValueChange = { RegisterUserViewModel.onNameChange(it) },
+                onValueChange = { registerUserViewModel.onNameChange(it) },
                 label = "Nome"
             )
             MyTextField(
                 value = registerUser.value.email,
                 onValueChange = {
-                    RegisterUserViewModel.onEmailChange(it)
+                    registerUserViewModel.onEmailChange(it)
                     emailError = !isValidEmail(it)
                 },
                 label = "E-mail",
@@ -83,7 +96,7 @@ fun RegisterScreen(
 
             OutlinedTextField(
                 value = registerUser.value.password,
-                onValueChange = { RegisterUserViewModel.onPasswordChange(it) },
+                onValueChange = { registerUserViewModel.onPasswordChange(it) },
                 singleLine = true,
                 label = { Text(text = "Senha") },
                 trailingIcon = {
@@ -101,7 +114,7 @@ fun RegisterScreen(
             OutlinedTextField(
                 value = registerUser.value.confirmPassword,
                 onValueChange = {
-                    RegisterUserViewModel.onConfirmPasswordChange(it)
+                    registerUserViewModel.onConfirmPasswordChange(it)
                     passwordError = it != registerUser.value.password
                 },
                 singleLine = true,
@@ -132,16 +145,36 @@ fun RegisterScreen(
                 horizontalArrangement = Arrangement.spacedBy(16.dp)
             ) {
                 Button(
-                    onClick = { onNavigateTo("LoginScreen") },
+                    onClick = {
+                        registerUserViewModel.registerUser()
+                    },
                     modifier = Modifier.weight(1f),
                     enabled = !emailError && !passwordError
                 ) {
-                    Text(text = "Entrar")
+                    Text(text = "Cadastrar")
+                }
+            }
+
+            if (registerUser.value.errorMessage.isNotBlank()) {
+                ErrorDialog(
+                    error = registerUser.value.errorMessage,
+                    onDismissRequest =  {
+                        registerUserViewModel.cleanDisplayValues()
+                    },
+                )
+            }
+
+            LaunchedEffect(registerUser.value.isSaved) {
+                if (registerUser.value.isSaved) {
+                    Toast.makeText(ctx, "Usuário cadastrado com sucesso!", Toast.LENGTH_SHORT).show()
+                    onNavigateTo("LoginScreen")
+                    registerUserViewModel.cleanDisplayValues()
                 }
             }
         }
     }
 }
+
 
 @Composable
 @Preview(showBackground = true, showSystemUi = true)

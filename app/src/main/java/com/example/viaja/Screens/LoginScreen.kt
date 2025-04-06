@@ -1,6 +1,5 @@
 package com.example.viaja.Screens
 
-import ImagemLocal
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -35,19 +34,28 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.cadastrousuario.Screens.LoginUserViewModel
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import com.example.viaja.R
+import com.example.viaja.ViewModel.LoginUserViewModel
+import com.example.viaja.Factory.LoginUserViewModelFactory
+import com.example.viaja.dataBase.AppDataBase
 
 @Composable
 fun LoginScreen(
-    LoginUserViewModel: LoginUserViewModel = viewModel(),
     onNavigateTo: (String) -> Unit
 ) {
 
-    var loginUser = LoginUserViewModel.uiState.collectAsState()
+    val ctx = LocalContext.current
+
+    val loginUserViewModel: LoginUserViewModel = viewModel(
+            factory = LoginUserViewModelFactory(AppDataBase.getDatabase(ctx).userDao())
+    )
+
+    val loginUser = loginUserViewModel.uiState.collectAsState()
 
     var passwordVisible by rememberSaveable { mutableStateOf(false) }
 
@@ -70,19 +78,18 @@ fun LoginScreen(
                 .padding(45.dp)
                 .border(1.dp, Color.Black, shape = RoundedCornerShape(12.dp))
                 .padding(32.dp)
-                .align(Alignment.Center)
-            ,
+                .align(Alignment.Center),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
             MyTextField(
                 value = loginUser.value.user,
-                onValueChange = { LoginUserViewModel.onUserChange(it) },
+                onValueChange = { loginUserViewModel.onUserChange(it) },
                 label = "Usuário"
             )
             OutlinedTextField(
                 value = loginUser.value.password,
-                onValueChange = { LoginUserViewModel.onPasswordChange(it) },
+                onValueChange = { loginUserViewModel.onPasswordChange(it) },
                 singleLine = true,
                 label = { Text(text = "Senha") },
                 trailingIcon = {
@@ -97,11 +104,25 @@ fun LoginScreen(
                 modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp),
             )
 
+            // Exibe a mensagem de erro se a combinação for inválida
+            if (loginUser.value.errorMessage.isNotBlank()) {
+                Text(
+                    text = loginUser.value.errorMessage,
+                    color = MaterialTheme.colorScheme.error,
+                    modifier = Modifier.padding(top = 8.dp)
+                )
+            }
+
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(16.dp)
             ) {
-                Button(onClick = { onNavigateTo("MainScreen") },
+                Button(onClick = {
+                    loginUserViewModel.authenticateUser()
+                    if (loginUser.value.isAuthenticated) {
+                        onNavigateTo("MainScreen")
+                    }
+                },
                     modifier = Modifier.weight(1f)) {
                     Text(text = "Entrar")
                 }
@@ -113,6 +134,7 @@ fun LoginScreen(
         }
     }
 }
+
 
 @Composable
 @Preview(showBackground = true, showSystemUi = true)
