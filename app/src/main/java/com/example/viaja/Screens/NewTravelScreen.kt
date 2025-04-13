@@ -138,6 +138,12 @@ fun NewTravelScreen(
                 label = "Orçamento"
             )
 
+            LaunchedEffect(regiterTravel.value.isSaved) {
+                if (regiterTravel.value.isSaved) {
+                    onNavigateTo("MainScreen")
+                }
+            }
+
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(16.dp)

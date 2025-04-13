@@ -3,6 +3,7 @@ package com.example.viaja.dao
 
 import androidx.room.*
 import com.example.viaja.entity.Travel
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface TravelDao {
@@ -18,6 +19,6 @@ interface TravelDao {
     @Delete
     suspend fun delete(travel: Travel)
 
-    @Query("SELECT * FROM travel WHERE id = :id")
-    suspend fun findById(id: Int): Travel?
+    @Query("SELECT * FROM travel")
+    fun getAllTravels():Flow<List<Travel>>
 }

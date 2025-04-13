@@ -27,20 +27,23 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.viaja.Screens.LoginScreen
 import com.example.viaja.Screens.RegisterScreen
 import com.example.viaja.ui.theme.ViajaTheme
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import com.example.viaja.Components.NavigationsItems
+import com.example.viaja.Factory.NewTravelViewModelFactory
 import com.example.viaja.Screens.MainScreen
 import com.example.viaja.Screens.NewTravelScreen
-import com.example.viaja.ViewModel.RegisterUserViewModel
+import com.example.viaja.ViewModel.NewTravelViewModel
+import com.example.viaja.dataBase.AppDataBase
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -133,10 +136,12 @@ fun MyApp() {
                 navController = navController,
                 startDestination = "LoginScreen"
             ) {
-                composable(route = "MainScreen"){
-                    MainScreen(onNavigateTo = {
-                        navController.navigate(it)
-                    })
+                composable(route = "MainScreen") {
+                    val viewModel = provideNewTravelViewModel()
+                    MainScreen(
+                        onNavigateTo = { navController.navigate(it) },
+                        viewModel = viewModel
+                    )
                 }
                 composable(route = "LoginScreen") {
                     LoginScreen(onNavigateTo = { route ->
@@ -152,9 +157,13 @@ fun MyApp() {
                     )
                 }
                 composable("Home") {
-                    MainScreen(onNavigateTo = {
-                    navController.navigate(it) })
+                    val viewModel = provideNewTravelViewModel()
+                    MainScreen(
+                        onNavigateTo = { navController.navigate(it) },
+                        viewModel = viewModel
+                    )
                 }
+
                 composable("NewTravelScreen") {
                     NewTravelScreen(onNavigateTo = { navController.navigate(it) })
                 }
@@ -162,6 +171,14 @@ fun MyApp() {
         }
     }
 }
+
+@Composable
+fun provideNewTravelViewModel(): NewTravelViewModel {
+    val context = LocalContext.current
+    val dao = AppDataBase.getDatabase(context).travelDao()
+    return viewModel(factory = NewTravelViewModelFactory(dao))
+}
+
 
 @Preview(showBackground = true, showSystemUi = true)
 @Composable

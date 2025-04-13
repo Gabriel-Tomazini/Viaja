@@ -37,6 +37,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import com.example.viaja.R
@@ -117,13 +118,20 @@ fun LoginScreen(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(16.dp)
             ) {
-                Button(onClick = {
-                    loginUserViewModel.authenticateUser()
+                val context = LocalContext.current
+
+                LaunchedEffect(loginUser.value.isAuthenticated) {
                     if (loginUser.value.isAuthenticated) {
                         onNavigateTo("MainScreen")
                     }
-                },
-                    modifier = Modifier.weight(1f)) {
+                }
+
+                Button(
+                    onClick = {
+                        loginUserViewModel.authenticateUser()
+                    },
+                    modifier = Modifier.weight(1f)
+                ) {
                     Text(text = "Entrar")
                 }
                 Button(onClick = { onNavigateTo("RegisterScreen") },

@@ -5,8 +5,10 @@ import androidx.lifecycle.viewModelScope
 import com.example.viaja.dao.TravelDao
 import com.example.viaja.entity.Travel
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 data class NewTravel(
@@ -69,4 +71,8 @@ class NewTravelViewModel(
             errorMessage = ""
         )
     }
+
+    val allTravels: StateFlow<List<Travel>> = travelDao.getAllTravels()
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
+
 }
